@@ -56,7 +56,7 @@ exports.handler = async function(event) {
         'X-Title': 'English Learning System',
       },
       body: JSON.stringify({
-       model: 'openai/gpt-4o-mini',
+       model: 'meta-llama/llama-3.1-8b-instruct:free',
         max_tokens: 300,
         messages: messages,
       }),
