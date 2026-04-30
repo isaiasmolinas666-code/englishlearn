@@ -1,25 +1,29 @@
 exports.handler = async function(event) {
-  // Solo aceptar POST
   if (event.httpMethod !== 'POST') {
     return { statusCode: 405, body: JSON.stringify({ error: 'Method not allowed' }) };
   }
 
+  // Netlify a veces envía el body en base64
+  let rawBody = event.body;
+  if (event.isBase64Encoded) {
+    rawBody = Buffer.from(rawBody, 'base64').toString('utf-8');
+  }
+
   let body;
   try {
-    body = JSON.parse(event.body);
-  } catch {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON' }) };
+    body = JSON.parse(rawBody);
+  } catch (e) {
+    return { statusCode: 400, body: JSON.stringify({ error: 'Invalid JSON: ' + e.message }) };
   }
 
   const { messages } = body;
   if (!messages || !Array.isArray(messages)) {
-    return { statusCode: 400, body: JSON.stringify({ error: 'Missing messages' }) };
+    return { statusCode: 400, body: JSON.stringify({ error: 'Missing or invalid messages array' }) };
   }
 
-  // La API key se guarda como variable de entorno en Netlify (nunca visible al usuario)
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
-    return { statusCode: 500, body: JSON.stringify({ error: 'API key not configured' }) };
+    return { statusCode: 500, body: JSON.stringify({ error: 'API key not configured on server' }) };
   }
 
   try {
@@ -28,7 +32,7 @@ exports.handler = async function(event) {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'guiaunpocomasmejoraun.netlify.app', // cambiá por tu URL de Netlify
+        'HTTP-Referer': 'https://guiaunpocomasmejoraun.netlify.app',
         'X-Title': 'English Learning System',
       },
       body: JSON.stringify({
