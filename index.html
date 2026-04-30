@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>English Learning System</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f1117;
+    --bg2: #181c27;
+    --bg3: #1e2332;
+    --card: #1a1f2e;
+    --border: #2a2f45;
+    --border2: #353c58;
+    --text: #e8eaf0;
+    --text2: #9aa0b8;
+    --text3: #5c6280;
+    --blue: #4a9eff;
+    --blue-bg: rgba(74,158,255,0.1);
+    --green: #3ddc84;
+    --green-bg: rgba(61,220,132,0.1);
+    --yellow: #ffd166;
+    --yellow-bg: rgba(255,209,102,0.1);
+    --red: #ff6b6b;
+    --red-bg: rgba(255,107,107,0.1);
+    --purple: #a78bfa;
+    --purple-bg: rgba(167,139,250,0.1);
+    --orange: #fb923c;
+    --orange-bg: rgba(251,146,60,0.1);
+    --radius: 10px;
+    --radius-sm: 6px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* ── LAYOUT ── */
+  .app-shell { display: flex; height: 100vh; overflow: hidden; }
+
+  .sidebar {
+    width: 220px;
+    min-width: 220px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 16px 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-logo {
+    padding: 0 16px 20px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--blue);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 8px;
+  }
+
+  .sidebar-logo span { font-size: 20px; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 16px;
+    cursor: pointer;
+    color: var(--text2);
+    font-size: 13px;
+    font-weight: 500;
+    border-radius: 0;
+    transition: all 0.15s;
+    border-left: 2px solid transparent;
+  }
+
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: var(--blue-bg); color: var(--blue); border-left-color: var(--blue); }
+  .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+  .nav-section {
+    padding: 12px 16px 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text3);
+  }
+
+  .main {
+    flex: 1;
+    overflow-y: auto;
+    background: var(--bg);
+  }
+
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .topbar-title { font-size: 15px; font-weight: 600; color: var(--text); }
+
+  .stats-bar {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+
+  .stat-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    color: var(--text2);
+    background: var(--bg3);
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+  }
+
+  .stat-pill strong { color: var(--text); }
+
+  .speed-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text3);
+  }
+
+  .speed-ctrl select {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 11px;
+    padding: 3px 6px;
+    border-radius: 6px;
+  }
+
+  .section { padding: 20px; display: none; }
+  .section.active { display: block; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px;
+    margin-bottom: 14px;
+  }
+
+  .card-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+
+  .card-subtitle {
+    font-size: 12px;
+    color: var(--text2);
+    margin-bottom: 12px;
+  }
+
+  /* ── BUTTONS ── */
+  btn, .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .btn:hover { background: var(--border); }
+  .btn-blue { background: var(--blue-bg); border-color: var(--blue); color: var(--blue); }
+  .btn-blue:hover { background: rgba(74,158,255,0.2); }
+  .btn-green { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  .btn-green:hover { background: rgba(61,220,132,0.2); }
+  .btn-yellow { background: var(--yellow-bg); border-color: var(--yellow); color: var(--yellow); }
+  .btn-red { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+  .btn-purple { background: var(--purple-bg); border-color: var(--purple); color: var(--purple); }
+  .btn-sm { padding: 4px 10px; font-size: 11px; }
+  .btn-lg { padding: 10px 22px; font-size: 14px; }
+  .btn:disabled { opacity: .35; cursor: default; }
+
+  .btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+  /* ── INPUTS ── */
+  input[type=text], textarea, select {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 13px;
+    padding: 8px 12px;
+    border-radius: var(--radius-sm);
+    outline: none;
+    transition: border-color .15s;
+    width: 100%;
+  }
+
+  input[type=text]:focus, textarea:focus { border-color: var(--blue); }
+  textarea { resize: vertical; line-height: 1.6; }
+
+  /* ── CHIPS ── */
+  .chip {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: .04em;
+  }
+
+  .chip-blue { background: var(--blue-bg); color: var(--blue); border: 1px solid rgba(74,158,255,.25); }
+  .chip-green { background: var(--green-bg); color: var(--green); border: 1px solid rgba(61,220,132,.25); }
+  .chip-yellow { background: var(--yellow-bg); color: var(--yellow); border: 1px solid rgba(255,209,102,.25); }
+  .chip-red { background: var(--red-bg); color: var(--red); border: 1px solid rgba(255,107,107,.25); }
+  .chip-purple { background: var(--purple-bg); color: var(--purple); border: 1px solid rgba(167,139,250,.25); }
+  .chip-orange { background: var(--orange-bg); color: var(--orange); border: 1px solid rgba(251,146,60,.25); }
+  .chip-off { background: var(--bg3); color: var(--text3); border: 1px solid var(--border); }
+
+  /* ── LESSONS PANEL ── */
+  .lesson-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .lesson-row:last-child { border-bottom: none; }
+  .lesson-label { font-size: 14px; font-weight: 500; color: var(--text); }
+  .lesson-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+  .toggle {
+    width: 36px; height: 20px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .toggle.on { background: var(--blue); }
+  .toggle.off { background: var(--border2); }
+  .toggle::after {
+    content: '';
+    position: absolute;
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    top: 2px;
+    transition: left .2s;
+  }
+  .toggle.on::after { left: 18px; }
+  .toggle.off::after { left: 2px; }
+
+  /* ── HOT SEAT ── */
+  .hotseat-timer {
+    font-size: 56px;
+    font-weight: 300;
+    color: var(--text);
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    padding: 12px 0;
+    transition: color .3s;
+  }
+  .hotseat-timer.urgent { color: var(--red); }
+  .hotseat-q {
+    font-size: 22px;
+    font-weight: 500;
+    text-align: center;
+    color: var(--text);
+    line-height: 1.4;
+    margin: 12px 0;
+  }
+  .opts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .opt-btn {
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--font);
+    transition: all .15s;
+    line-height: 1.4;
+  }
+  .opt-btn:hover { border-color: var(--blue); background: var(--blue-bg); color: var(--blue); }
+  .opt-btn.correct { border-color: var(--green); background: var(--green-bg); color: var(--green); }
+  .opt-btn.wrong { border-color: var(--red); background: var(--red-bg); color: var(--red); }
+
+  .hotseat-progress {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
+  .hs-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border2);
+  }
+  .hs-dot.done { background: var(--green); }
+  .hs-dot.wrong { background: var(--red); }
+  .hs-dot.current { background: var(--blue); }
+
+  /* ── DIALOGUES ── */
+  .dialog-line {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    align-items: flex-start;
+  }
+  .dialog-line:last-child { border-bottom: none; }
+  .dialog-who {
+    font-size: 10px;
+    font-weight: 700;
+    min-width: 18px;
+    padding-top: 2px;
+    letter-spacing: .05em;
+  }
+  .who-a { color: var(--blue); }
+  .who-b { color: var(--green); }
+  .line-en { font-size: 15px; color: var(--text); font-weight: 500; }
+  .line-es { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .line-hidden { filter: blur(5px); user-select: none; cursor: pointer; transition: filter .2s; }
+  .line-hidden:hover { filter: blur(2px); }
+
+  /* ── SCAFFOLD ── */
+  .scaffold-box {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 12px 16px;
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 2;
+    margin: 10px 0;
+  }
+  .scaffold-box strong { color: var(--yellow); }
+
+  /* ── FILL IN BLANK ── */
+  .fill-sentence {
+    font-size: 15px;
+    color: var(--text);
+    line-height: 2.4;
+    margin-bottom: 10px;
+  }
+  .fill-input {
+    display: inline-block;
+    width: 90px;
+    padding: 2px 8px;
+    border: none;
+    border-bottom: 2px solid var(--blue);
+    background: transparent;
+    color: var(--blue);
+    font-size: 14px;
+    font-family: var(--mono);
+    text-align: center;
+    outline: none;
+    vertical-align: middle;
+  }
+  .fill-input.correct { border-color: var(--green); color: var(--green); }
+  .fill-input.wrong { border-color: var(--red); color: var(--red); }
+
+  /* ── CHAT ── */
+  .chat-area {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg2);
+    padding: 12px;
+    min-height: 200px;
+    max-height: 320px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .chat-bubble {
+    padding: 9px 13px;
+    border-radius: 12px;
+    font-size: 14px;
+    max-width: 85%;
+    line-height: 1.5;
+  }
+  .bubble-ai {
+    background: var(--blue-bg);
+    color: var(--blue);
+    border: 1px solid rgba(74,158,255,.2);
+    align-self: flex-start;
+    border-bottom-left-radius: 3px;
+  }
+  .bubble-user {
+    background: var(--green-bg);
+    color: var(--green);
+    border: 1px solid rgba(61,220,132,.2);
+    align-self: flex-end;
+    border-bottom-right-radius: 3px;
+  }
+  .bubble-note {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: center;
+    align-self: center;
+    padding: 4px 0;
+  }
+  .chat-input-row { display: flex; gap: 8px; }
+  .chat-input-row input { flex: 1; }
+
+  /* ── DICTATION ── */
+  .dictation-phrase {
+    font-size: 28px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--text);
+    padding: 24px 0;
+    letter-spacing: .5px;
+  }
+  .dictation-hidden {
+    font-size: 28px;
+    text-align: center;
+    color: var(--text3);
+    padding: 24px 0;
+    letter-spacing: 4px;
+  }
+
+  /* ── TRANSLATOR ── */
+  .translate-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .translate-box {
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    padding: 14px;
+  }
+  .translate-lang {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+  .translate-text { font-size: 16px; color: var(--text); line-height: 1.5; }
+
+  /* ── VOCABULARY ── */
+  .vocab-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+  }
+  .vocab-card:last-child { border-bottom: none; }
+  .vocab-en { font-size: 15px; font-weight: 600; color: var(--text); }
+  .vocab-example { font-size: 11px; color: var(--text3); margin-top: 2px; font-style: italic; }
+  .vocab-es { font-size: 13px; color: var(--text2); min-width: 100px; text-align: right; }
+
+  /* ── FEEDBACK BOX ── */
+  .feedback-box {
+    padding: 12px 14px;
+    border-radius: var(--radius-sm);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 10px;
+  }
+  .feedback-good { background: var(--green-bg); border: 1px solid rgba(61,220,132,.25); color: var(--green); }
+  .feedback-bad { background: var(--red-bg); border: 1px solid rgba(255,107,107,.25); color: var(--text); }
+  .feedback-info { background: var(--blue-bg); border: 1px solid rgba(74,158,255,.25); color: var(--text2); }
+  .feedback-loading { color: var(--text3); }
+
+  /* ── PROGRESS RING ── */
+  .progress-ring-wrap { text-align: center; padding: 8px 0; }
+  .score-big { font-size: 40px; font-weight: 300; color: var(--text); }
+  .score-label { font-size: 12px; color: var(--text3); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    .sidebar { display: none; }
+    .translate-pair { grid-template-columns: 1fr; }
+    .opts-grid { grid-template-columns: 1fr; }
+    .hotseat-q { font-size: 18px; }
+    .hotseat-timer { font-size: 44px; }
+  }
+
+  /* ── MOBILE NAV ── */
+  .mobile-nav {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    z-index: 100;
+    padding: 4px 0;
+  }
+  .mobile-nav-inner {
+    display: flex;
+    overflow-x: auto;
+    gap: 2px;
+    padding: 2px 8px;
+  }
+  .mobile-nav-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 6px 10px;
+    font-size: 9px;
+    color: var(--text3);
+    cursor: pointer;
+    border-radius: 6px;
+    white-space: nowrap;
+    border: none;
+    background: none;
+    font-family: var(--font);
+    min-width: 52px;
+  }
+  .mobile-nav-btn .icon { font-size: 18px; }
+  .mobile-nav-btn.active { color: var(--blue); }
+
+  @media (max-width: 640px) {
+    .mobile-nav { display: flex; }
+    .main { padding-bottom: 60px; }
+  }
+
+  .hidden { display: none !important; }
+
+  /* Animations */
+  @keyframes fadeIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn .3s ease; }
+
+  /* Grid helpers */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media (max-width: 700px) { .grid-2 { grid-template-columns: 1fr; } }
+
+  /* Role select */
+  #chat-role { width: auto; }
+
+  /* Dictation input */
+  .dictation-input {
+    font-size: 16px;
+    text-align: center;
+    padding: 10px 16px;
+  }
+
+  /* Lesson tags in conversations */
+  .conv-tags { margin-bottom: 8px; display: flex; gap: 4px; flex-wrap: wrap; }
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-logo"><span>🇺🇸</span> EnglishClass</div>
+    <div class="nav-section">Practice</div>
+    <div class="nav-item active" onclick="showSection('lessons')"><span class="icon">📚</span> Lessons</div>
+    <div class="nav-item" onclick="showSection('hotseat')"><span class="icon">⏱</span> Hot Seat</div>
+    <div class="nav-item" onclick="showSection('dialog')"><span class="icon">💬</span> Dialogues</div>
+    <div class="nav-item" onclick="showSection('scaffold')"><span class="icon">🗣️</span> Guided Speaking</div>
+    <div class="nav-item" onclick="showSection('fill')"><span class="icon">✏️</span> Fill in the Blank</div>
+    <div class="nav-section">AI Tools</div>
+    <div class="nav-item" onclick="showSection('chat')"><span class="icon">🤖</span> AI Chat</div>
+    <div class="nav-item" onclick="showSection('translate')"><span class="icon">🔄</span> Translate & Check</div>
+    <div class="nav-item" onclick="showSection('dictation')"><span class="icon">🎧</span> Dictation</div>
+    <div class="nav-section">Reference</div>
+    <div class="nav-item" onclick="showSection('vocab')"><span class="icon">📖</span> Vocabulary</div>
+  </aside>
+
+  <!-- MOBILE NAV -->
+  <nav class="mobile-nav">
+    <div class="mobile-nav-inner">
+      <button class="mobile-nav-btn active" onclick="showSection('lessons')"><span class="icon">📚</span>Lessons</button>
+      <button class="mobile-nav-btn" onclick="showSection('hotseat')"><span class="icon">⏱</span>Hot Seat</button>
+      <button class="mobile-nav-btn" onclick="showSection('dialog')"><span class="icon">💬</span>Dialogues</button>
+      <button class="mobile-nav-btn" onclick="showSection('scaffold')"><span class="icon">🗣️</span>Speaking</button>
+      <button class="mobile-nav-btn" onclick="showSection('fill')"><span class="icon">✏️</span>Fill</button>
+      <button class="mobile-nav-btn" onclick="showSection('chat')"><span class="icon">🤖</span>AI Chat</button>
+      <button class="mobile-nav-btn" onclick="showSection('translate')"><span class="icon">🔄</span>Translate</button>
+      <button class="mobile-nav-btn" onclick="showSection('dictation')"><span class="icon">🎧</span>Dictation</button>
+      <button class="mobile-nav-btn" onclick="showSection('vocab')"><span class="icon">📖</span>Vocab</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="topbar">
+      <div class="topbar-title" id="topbar-title">Lessons</div>
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="speed-ctrl">
+          Speed:
+          <select id="rateSelect">
+            <option value="0.5">0.5x slow</option>
+            <option value="0.7" selected>0.7x normal</option>
+            <option value="0.85">0.85x fast</option>
+            <option value="1.0">1.0x native</option>
+          </select>
+        </div>
+        <div class="stats-bar">
+          <div class="stat-pill">🔥 <strong id="stat-streak">0</strong> streak</div>
+          <div class="stat-pill">✅ <strong id="stat-done">0</strong> today</div>
+          <div class="stat-pill">📗 <strong id="stat-lessons">0</strong> active</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ LESSONS ══════════════════ -->
+    <div class="section active" id="sec-lessons">
+      <div class="card">
+        <div class="card-title">Active Lessons</div>
+        <div class="card-subtitle">Only active lessons appear in exercises. Toggle what your class has covered.</div>
+        <div id="lessons-list"></div>
+        <div class="btn-row">
+          <button class="btn btn-blue" onclick="activateAll()">Activate all</button>
+          <button class="btn" onclick="resetLessons()">Reset to default</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">Quick Start</div>
+        <div class="grid-2">
+          <button class="btn btn-blue btn-lg" onclick="showSection('hotseat')">⏱ Hot Seat — Quick Practice</button>
+          <button class="btn btn-green btn-lg" onclick="showSection('chat')">🤖 Chat with AI Partner</button>
+          <button class="btn btn-yellow btn-lg" onclick="showSection('dialog')">💬 Practice Dialogues</button>
+          <button class="btn btn-purple btn-lg" onclick="showSection('dictation')">🎧 Dictation Exercise</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ HOT SEAT ══════════════════ -->
+    <div class="section hidden" id="sec-hotseat">
+      <div class="card" id="hs-ready-card">
+        <div class="card-title">Hot Seat</div>
+        <div class="card-subtitle">A question appears. You have 6 seconds to answer out loud. If you freeze, choose one of the options. The goal is automatic response — don't overthink!</div>
+        <button class="btn btn-blue btn-lg" onclick="startHotSeat()">▶ Start</button>
+      </div>
+
+      <div class="card hidden" id="hs-game-card">
+        <div class="hotseat-progress" id="hs-progress"></div>
+        <div class="hotseat-timer" id="hs-timer">6</div>
+        <div class="hotseat-q" id="hs-question"></div>
+        <div class="opts-grid" id="hs-opts"></div>
+      </div>
+
+      <div class="card hidden" id="hs-result-card">
+        <div id="hs-result-text" style="font-size:16px;margin-bottom:12px"></div>
+        <div class="btn-row">
+          <button class="btn btn-blue" onclick="nextHotSeat()">Next →</button>
+          <button class="btn" onclick="endHotSeat()">Stop</button>
+        </div>
+      </div>
+
+      <div class="card hidden" id="hs-end-card">
+        <div class="card-title">Session complete!</div>
+        <div class="progress-ring-wrap">
+          <div class="score-big" id="hs-score">0/0</div>
+          <div class="score-label">correct answers</div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-blue" onclick="startHotSeat()">▶ Play again</button>
+          <button class="btn" onclick="showSection('lessons')">← Back</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ DIALOGUES ══════════════════ -->
+    <div class="section hidden" id="sec-dialog">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div class="card-title" style="margin:0">Dialogue Bank</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <select id="dialog-filter" onchange="filterDialogs()" style="width:auto">
+              <option value="all">All topics</option>
+            </select>
+            <select id="dialog-lesson-filter" onchange="filterDialogs()" style="width:auto">
+              <option value="all">All lessons</option>
+            </select>
+          </div>
+        </div>
+        <div class="conv-tags" id="dialog-chips"></div>
+        <div id="dialog-lines"></div>
+        <div class="btn-row">
+          <button class="btn btn-blue" onclick="playFullDialog()">▶ Listen full</button>
+          <button class="btn" onclick="playDialogSlow()">🐢 Slow</button>
+          <button class="btn btn-green" onclick="loadDialog()">🔀 New dialogue</button>
+          <button class="btn" onclick="toggleTranslations()">👁 Toggle translations</button>
+        </div>
+        <div style="margin-top:8px;font-size:12px;color:var(--text3)">Tip: cover the Spanish, read each line out loud, then check.</div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ GUIDED SPEAKING ══════════════════ -->
+    <div class="section hidden" id="sec-scaffold">
+      <div class="card">
+        <div class="card-title">Guided Speaking — Fill the Structure</div>
+        <div style="font-size:20px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:10px" id="sc-question"></div>
+        <div class="scaffold-box" id="sc-scaffold"></div>
+        <textarea id="sc-answer" rows="2" placeholder="Write your answer here..." style="margin-top:10px"></textarea>
+        <div class="btn-row">
+          <button class="btn btn-blue" onclick="speakEl('sc-question')">🔊 Listen</button>
+          <button class="btn btn-green" onclick="checkScaffoldAI()">🤖 Check with AI</button>
+          <button class="btn" onclick="showScSample()">💡 Sample answer</button>
+          <button class="btn" onclick="loadScaffold()">→ Next</button>
+        </div>
+        <div id="sc-sample" class="hidden scaffold-box" style="margin-top:8px;border-left:2px solid var(--green);"></div>
+        <div id="sc-feedback" class="hidden feedback-box" style="margin-top:8px;"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ FILL IN BLANK ══════════════════ -->
+    <div class="section hidden" id="sec-fill">
+      <div class="card">
+        <div class="card-title">Fill in the Blank</div>
+        <div id="fill-sentences" style="margin-bottom:14px"></div>
+        <div class="btn-row">
+          <button class="btn btn-green" onclick="checkFill()">✓ Check answers</button>
+          <button class="btn" onclick="loadFill()">🔀 New set</button>
+          <button class="btn btn-blue" onclick="readFillSentences()">🔊 Listen</button>
+        </div>
+        <div id="fill-result" class="hidden feedback-box" style="margin-top:10px;"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ AI CHAT ══════════════════ -->
+    <div class="section hidden" id="sec-chat">
+      <div class="card">
+        <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+          <div class="card-title" style="margin:0">AI Conversation Partner</div>
+          <select id="chat-role">
+            <option value="friend">👋 Friend (casual)</option>
+            <option value="shop">🛍 Shopkeeper</option>
+            <option value="doctor">🏥 Doctor's office</option>
+            <option value="teacher">🎓 English teacher</option>
+            <option value="cafe">☕ Café waiter</option>
+            <option value="job">💼 Job interview</option>
+          </select>
+          <button class="btn btn-sm" onclick="startChat()">New chat</button>
+        </div>
+        <div class="chat-area" id="chat-area"></div>
+        <div class="chat-input-row">
+          <input type="text" id="chat-input" placeholder="Type your answer in English..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn btn-blue" onclick="sendChat()">Send</button>
+          <button class="btn btn-sm" onclick="speakLastAI()">🔊</button>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:var(--text3)" id="chat-lessons-note"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ TRANSLATE & CHECK ══════════════════ -->
+    <div class="section hidden" id="sec-translate">
+      <div class="card">
+        <div class="card-title">Translate & Check — Spanish → English</div>
+        <div class="card-subtitle">Read the Spanish sentence. Write your English translation. The AI will check it and explain any errors.</div>
+
+        <div class="translate-pair">
+          <div class="translate-box">
+            <div class="translate-lang">Spanish</div>
+            <div class="translate-text" id="tr-es-text">—</div>
+          </div>
+          <div class="translate-box">
+            <div class="translate-lang">Your English</div>
+            <input type="text" id="tr-en-input" placeholder="Write your translation..." onkeydown="if(event.key==='Enter')checkTranslation()">
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-green" onclick="checkTranslation()">🤖 Check translation</button>
+          <button class="btn" onclick="loadTranslation()">→ New sentence</button>
+          <button class="btn btn-blue" onclick="speakTranslation()">🔊 Listen</button>
+        </div>
+
+        <div id="tr-feedback" class="hidden feedback-box" style="margin-top:12px;"></div>
+        <div id="tr-correct" class="hidden" style="margin-top:8px;font-size:12px;color:var(--text3)"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ DICTATION ══════════════════ -->
+    <div class="section hidden" id="sec-dictation">
+      <div class="card">
+        <div class="card-title">Dictation — Listen & Write</div>
+        <div class="card-subtitle">The phrase will be read aloud. Write what you hear. Then check your answer.</div>
+
+        <div id="dict-hidden-phrase" class="dictation-hidden">● ● ● ● ●</div>
+        <div id="dict-reveal-phrase" class="dictation-phrase hidden"></div>
+
+        <input type="text" id="dict-input" class="dictation-input" placeholder="Write what you hear..." style="text-align:center;margin-bottom:10px" onkeydown="if(event.key==='Enter')checkDictation()">
+
+        <div class="btn-row" style="justify-content:center">
+          <button class="btn btn-blue btn-lg" onclick="playDictation()">🔊 Listen</button>
+          <button class="btn" onclick="playDictationSlow()">🐢 Slow</button>
+          <button class="btn btn-green" onclick="checkDictation()">✓ Check</button>
+          <button class="btn" onclick="loadDictation()">→ Next</button>
+          <button class="btn btn-sm" onclick="toggleDictationReveal()">Reveal</button>
+        </div>
+
+        <div id="dict-feedback" class="hidden feedback-box" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <!-- ══════════════════ VOCABULARY ══════════════════ -->
+    <div class="section hidden" id="sec-vocab">
+      <div class="card">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:12px">
+          <div>
+            <div class="card-title" style="margin:0">Vocabulary</div>
+            <div style="font-size:12px;color:var(--text3);margin-top:2px" id="vocab-topic-label"></div>
+          </div>
+          <div class="btn-row" style="margin:0">
+            <button class="btn btn-sm" onclick="loadVocab()">🔀 New set</button>
+            <button class="btn btn-sm btn-blue" onclick="playAllVocab()">🔊 Listen all</button>
+            <button class="btn btn-sm" onclick="shuffleVocab()">Shuffle</button>
+          </div>
+        </div>
+        <div id="vocab-rows"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════════════
+let speechRate = 0.7;
+let stats = JSON.parse(localStorage.getItem('eng_stats')||'{"streak":0,"today":0,"lastDate":""}');
+let hsInterval = null;
+let hsTime = 6;
+let hsIndex = 0;
+let hsPool = [];
+let hsCorrect = 0;
+let hsResults = [];
+let currentDialog = null;
+let currentScaffold = null;
+let currentFill = null;
+let currentVocab = null;
+let currentTranslation = null;
+let currentDictation = null;
+let chatHistory = [];
+let chatRole = 'friend';
+let translationsVisible = true;
+let lastAIMessage = '';
+let dictationRevealed = false;
+
+document.getElementById('rateSelect').onchange = e => { speechRate = parseFloat(e.target.value); };
+
+// ════════════════════════════════════════════════
+// STATS
+// ════════════════════════════════════════════════
+function saveStats(){ localStorage.setItem('eng_stats', JSON.stringify(stats)); }
+function bumpStat(){
+  const today = new Date().toDateString();
+  if(stats.lastDate !== today){ stats.today=0; }
+  stats.today++;
+  if(stats.lastDate !== today){
+    const yesterday = new Date(Date.now()-86400000).toDateString();
+    if(stats.lastDate===yesterday) stats.streak++;
+    else if(stats.streak===0) stats.streak=1;
+  }
+  stats.lastDate = today;
+  saveStats(); updateStatUI();
+}
+function updateStatUI(){
+  document.getElementById('stat-streak').textContent = stats.streak;
+  document.getElementById('stat-done').textContent = stats.today;
+  document.getElementById('stat-lessons').textContent = LESSONS.filter(l=>l.active).length;
+}
+
+// ════════════════════════════════════════════════
+// SPEECH
+// ════════════════════════════════════════════════
+function speakEN(text, rate){
+  if(!text||!text.trim()||!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text.replace(/[^\w\s'.?,!-]/g,' ').trim());
+  u.lang='en-US'; u.rate=rate||speechRate; speechSynthesis.speak(u);
+}
+function speakEl(id){
+  const el=document.getElementById(id);
+  if(el) speakEN(el.value||el.textContent);
+}
+
+// ════════════════════════════════════════════════
+// NAVIGATION
+// ════════════════════════════════════════════════
+const SECTIONS = ['lessons','hotseat','dialog','scaffold','fill','chat','translate','dictation','vocab'];
+const TITLES = {
+  lessons:'Lessons', hotseat:'Hot Seat', dialog:'Dialogues',
+  scaffold:'Guided Speaking', fill:'Fill in the Blank', chat:'AI Chat',
+  translate:'Translate & Check', dictation:'Dictation', vocab:'Vocabulary'
+};
+
+function showSection(name){
+  SECTIONS.forEach(s=>{
+    document.getElementById('sec-'+s).classList.toggle('active', s===name);
+    document.getElementById('sec-'+s).classList.toggle('hidden', s!==name);
+  });
+  document.querySelectorAll('.nav-item').forEach(b=>{
+    const sec = b.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    b.classList.toggle('active', sec===name);
+  });
+  document.querySelectorAll('.mobile-nav-btn').forEach(b=>{
+    const sec = b.getAttribute('onclick').match(/'([^']+)'/)?.[1];
+    b.classList.toggle('active', sec===name);
+  });
+  document.getElementById('topbar-title').textContent = TITLES[name]||name;
+
+  if(name==='dialog') loadDialog();
+  if(name==='scaffold') loadScaffold();
+  if(name==='fill') loadFill();
+  if(name==='vocab') loadVocab();
+  if(name==='chat') initChat();
+  if(name==='translate') loadTranslation();
+  if(name==='dictation') loadDictation();
+}
+
+// ════════════════════════════════════════════════
+// LESSON DATA
+// ════════════════════════════════════════════════
+const LESSONS = [
+  {id:'greetings', label:'Greetings & farewells', active:true,
+    description:'Hello, goodbye, how are you',
+    questions:[
+      {q:'How are you?', opts:["I'm fine, thank you.","I'm tired today.","I'm happy!","Not bad, thanks."], ans:0},
+      {q:'What is your name?', opts:["My name is Ana.","I am from here.","I like English.","Good morning!"], ans:0},
+      {q:'Where are you from?', opts:["I am from Paraguay.","I am 20 years old.","I like coffee.","I am a student."], ans:0},
+      {q:'Good morning! How are you?', opts:["Good morning! I'm great, thanks.","Good morning! I am from Asunción.","Hello. I like coffee.","Fine. I am 25."], ans:0},
+    ],
+    scaffold:[
+      {q:"How are you today?", structure:"I am ___ today. I feel ___ because ___."},
+      {q:"What is your name and where are you from?", structure:"My name is ___. I am from ___."},
+      {q:"How do you greet someone for the first time?", structure:"Hello! My name is ___. Nice to meet you!"},
+    ],
+    fill:[
+      {sentence:"___ are you? I ___ fine, thank you.", answers:["How","am"]},
+      {sentence:"My name ___ Carlos. I ___ from Asunción.", answers:["is","am"]},
+      {sentence:"Nice to ___ you! My name ___ Laura.", answers:["meet","is"]},
+    ],
+    translations:[
+      {es:"¿Cómo estás hoy?", en:"How are you today?"},
+      {es:"Mucho gusto, me llamo Diego.", en:"Nice to meet you, my name is Diego."},
+      {es:"Hasta luego, que te vaya bien.", en:"Goodbye, take care."},
+    ],
+    dictation:[
+      "Hi, how are you today?",
+      "Nice to meet you. My name is Ana.",
+      "See you later. Have a good day!",
+    ]
+  },
+  {id:'numbers', label:'Numbers 1–100', active:true,
+    description:'Counting, prices, ages, phone numbers',
+    questions:[
+      {q:'How old are you?', opts:["I am twenty years old.","I have two sisters.","I live near here.","I am fine."], ans:0},
+      {q:'What is your phone number?', opts:["It is 0981 123 456.","I am from here.","My name is Luis.","I like numbers."], ans:0},
+      {q:'How much does it cost?', opts:["It costs thirty dollars.","It is near the park.","I have money.","I buy it every day."], ans:0},
+    ],
+    scaffold:[
+      {q:"How old are you?", structure:"I am ___ years old."},
+      {q:"How many people are in your family?", structure:"There are ___ people in my family."},
+      {q:"What time do you wake up?", structure:"I wake up at ___ every morning."},
+    ],
+    fill:[
+      {sentence:"I am ___ years old. My sister is ___ years old.", answers:["twenty","fifteen"]},
+      {sentence:"There are ___ students in the class.", answers:["twenty"]},
+      {sentence:"It costs ___ dollars. I have ___.", answers:["thirty","fifty"]},
+    ],
+    translations:[
+      {es:"Tengo veintitrés años.", en:"I am twenty-three years old."},
+      {es:"¿Cuánto cuesta? Son treinta y cinco pesos.", en:"How much does it cost? It's thirty-five pesos."},
+      {es:"Hay doce estudiantes en la clase.", en:"There are twelve students in the class."},
+    ],
+    dictation:[
+      "I am twenty years old.",
+      "It costs fifteen dollars.",
+      "There are thirty students here.",
+    ]
+  },
+  {id:'verb_to_be', label:'Verb to be', active:true,
+    description:'am, is, are — descriptions, locations',
+    questions:[
+      {q:'Is she a teacher?', opts:["Yes, she is.","Yes, he are.","Yes, I am a teacher.","She are teacher."], ans:0},
+      {q:'Are you a student?', opts:["Yes, I am.","Yes, I is.","Yes, we are students.","I be a student."], ans:0},
+      {q:'Where is the bank?', opts:["It is on the corner.","They are near.","We are here.","I am at the bank."], ans:0},
+      {q:'Are they happy?', opts:["Yes, they are very happy.","Yes, they is happy.","Yes, they am fine.","Yes, they be ok."], ans:0},
+    ],
+    scaffold:[
+      {q:"Are you a student or do you work?", structure:"I am a ___. I am ___ years old."},
+      {q:"Is your city big or small?", structure:"My city is ___. It is ___ and ___."},
+      {q:"Describe your best friend.", structure:"My friend is ___. He/She is ___ years old. He/She is ___."},
+    ],
+    fill:[
+      {sentence:"She ___ a doctor. They ___ my friends.", answers:["is","are"]},
+      {sentence:"___ you a student? Yes, I ___ .", answers:["Are","am"]},
+      {sentence:"The hospital ___ very big. The shops ___ near.", answers:["is","are"]},
+    ],
+    translations:[
+      {es:"Ella es maestra y tiene treinta años.", en:"She is a teacher and she is thirty years old."},
+      {es:"¿Dónde está el banco? Está en la esquina.", en:"Where is the bank? It is on the corner."},
+      {es:"Ellos son mis amigos. Son muy simpáticos.", en:"They are my friends. They are very nice."},
+    ],
+    dictation:[
+      "She is a teacher.",
+      "They are my friends.",
+      "The bank is on the corner.",
+    ]
+  },
+  {id:'present_simple', label:'Present simple', active:true,
+    description:'Habits, routines, facts',
+    questions:[
+      {q:'What do you do every morning?', opts:["I wake up and have breakfast.","I am eating now.","I have eat breakfast.","I woke up early."], ans:0},
+      {q:'Does she live near here?', opts:["Yes, she lives nearby.","Yes, she live here.","Yes, she is living here.","Yes, she do."], ans:0},
+      {q:'What time does the class start?', opts:["It starts at eight o'clock.","It start at eight.","It is start at eight.","It starting at eight."], ans:0},
+    ],
+    scaffold:[
+      {q:"What do you do on weekends?", structure:"On weekends I usually ___. Sometimes I ___."},
+      {q:"What time do you wake up?", structure:"I wake up at ___ every day."},
+      {q:"What does your mother do?", structure:"My mother is a ___. She ___ every day."},
+    ],
+    fill:[
+      {sentence:"She ___ to school every day. They ___ breakfast at 7 am.", answers:["goes","have"]},
+      {sentence:"He ___ like coffee. He ___ tea.", answers:["doesn't","prefers"]},
+      {sentence:"I ___ English every Tuesday. My teacher ___ from the USA.", answers:["study","is"]},
+    ],
+    translations:[
+      {es:"Ella va al trabajo en colectivo todos los días.", en:"She goes to work by bus every day."},
+      {es:"¿Qué hacés los fines de semana? Salgo con mis amigos.", en:"What do you do on weekends? I go out with my friends."},
+      {es:"El supermercado cierra a las nueve de la noche.", en:"The supermarket closes at nine at night."},
+    ],
+    dictation:[
+      "She goes to school every day.",
+      "I usually have coffee in the morning.",
+      "He doesn't like vegetables.",
+    ]
+  },
+  {id:'present_continuous', label:'Present continuous', active:true,
+    description:'Actions happening right now',
+    questions:[
+      {q:'What are you doing right now?', opts:["I am studying English.","I study English now.","I studied English.","I have study."], ans:0},
+      {q:'Is it raining today?', opts:["Yes, it is raining.","Yes, it rains.","Yes, it rained.","Yes, it rain."], ans:0},
+      {q:'What is she doing?', opts:["She is cooking dinner.","She cooks dinner.","She cooked dinner.","She cook dinner now."], ans:0},
+    ],
+    scaffold:[
+      {q:"What are you doing right now?", structure:"Right now I am ___-ing. I am also ___."},
+      {q:"What is happening outside your window?", structure:"Outside I can see ___. People are ___-ing."},
+      {q:"What are your friends doing this afternoon?", structure:"My friends are ___-ing. They are also ___."},
+    ],
+    fill:[
+      {sentence:"She ___ (read) a book. They ___ (play) football.", answers:["is reading","are playing"]},
+      {sentence:"I ___ (not/watch) TV. I ___ (study).", answers:["am not watching","am studying"]},
+      {sentence:"It ___ (rain) outside. I ___ (stay) home.", answers:["is raining","am staying"]},
+    ],
+    translations:[
+      {es:"Ahora mismo estoy estudiando inglés.", en:"Right now I am studying English."},
+      {es:"¿Qué estás haciendo? Estoy cocinando la cena.", en:"What are you doing? I am cooking dinner."},
+      {es:"Está lloviendo y los chicos están jugando adentro.", en:"It is raining and the kids are playing inside."},
+    ],
+    dictation:[
+      "I am studying English right now.",
+      "She is cooking dinner.",
+      "They are playing in the park.",
+    ]
+  },
+  {id:'there_this', label:'There is / This is', active:true,
+    description:'Describing places and introducing things',
+    questions:[
+      {q:'How do you describe a room?', opts:["There is a table and two chairs.","This are a table.","There are a table.","Is there a table?"], ans:0},
+      {q:'How do you introduce someone?', opts:["This is my friend Carlos.","There is my friend.","He is my friend Carlos is.","Is my friend Carlos."], ans:0},
+      {q:'Are there many shops here?', opts:["Yes, there are many shops.","Yes, there is many shop.","Yes, this is many shops.","Yes, they there are shops."], ans:0},
+    ],
+    scaffold:[
+      {q:"Describe your classroom or living room.", structure:"There is a ___. There are ___ chairs. This is ___."},
+      {q:"Introduce your neighborhood.", structure:"My neighborhood is ___. There are ___. There is also a ___."},
+    ],
+    fill:[
+      {sentence:"___ is a bank near here. ___ are two supermarkets.", answers:["There","There"]},
+      {sentence:"___ is my teacher. ___ are my classmates.", answers:["This","These"]},
+    ],
+    translations:[
+      {es:"Hay un banco cerca de aquí.", en:"There is a bank near here."},
+      {es:"Este es mi amigo Carlos. Es muy simpático.", en:"This is my friend Carlos. He is very nice."},
+      {es:"En mi barrio hay muchas tiendas y un parque grande.", en:"In my neighborhood there are many shops and a big park."},
+    ],
+    dictation:[
+      "There is a bank on the corner.",
+      "This is my friend Ana.",
+      "There are twenty students in the class.",
+    ]
+  },
+  {id:'can', label:"Can / Can't", active:false,
+    description:'Ability and permission',
+    questions:[
+      {q:'What can you do well?', opts:["I can speak Spanish very well.","I can to speak Spanish.","I cans speak.","I am can speak."], ans:0},
+      {q:"Can she drive?", opts:["No, she can't drive.","No, she cannot to drive.","No, she not can drive.","No, she don't can."], ans:0},
+      {q:'Can they play football?', opts:["Yes, they can play very well.","Yes, they can to play.","Yes, they cans play.","Yes, they are can play."], ans:0},
+    ],
+    scaffold:[
+      {q:"What can you do? What can't you do?", structure:"I can ___. I can also ___. But I can't ___ yet."},
+      {q:"Can you describe someone's abilities?", structure:"My friend can ___. He/She can also ___. But he/she can't ___."},
+    ],
+    fill:[
+      {sentence:"She ___ swim but she ___ drive.", answers:["can","can't"]},
+      {sentence:"___ you speak French? No, I ___.", answers:["Can","can't"]},
+    ],
+    translations:[
+      {es:"Puedo hablar inglés un poco.", en:"I can speak English a little."},
+      {es:"Ella no sabe cocinar, pero quiere aprender.", en:"She can't cook, but she wants to learn."},
+      {es:"¿Podés ayudarme? Sí, puedo.", en:"Can you help me? Yes, I can."},
+    ],
+    dictation:[
+      "I can speak English.",
+      "She can't drive yet.",
+      "Can you help me, please?",
+    ]
+  },
+  {id:'have', label:'Have / Has', active:false,
+    description:'Possession, family, descriptions',
+    questions:[
+      {q:'Do you have a pet?', opts:["Yes, I have a dog.","Yes, I has a dog.","Yes, I have dog.","Yes, I am have dog."], ans:0},
+      {q:'Does he have brothers?', opts:["Yes, he has two brothers.","Yes, he have two brothers.","Yes, he is have brothers.","Yes, he haves brothers."], ans:0},
+    ],
+    scaffold:[
+      {q:"Do you have a family? Describe them.", structure:"I have ___. My ___ has ___."},
+      {q:"What do you have in your bag?", structure:"In my bag I have ___. I also have ___."},
+    ],
+    fill:[
+      {sentence:"I ___ a sister. She ___ brown eyes.", answers:["have","has"]},
+      {sentence:"We ___ a dog. It ___ a long tail.", answers:["have","has"]},
+    ],
+    translations:[
+      {es:"Tengo dos hermanos y una hermana.", en:"I have two brothers and one sister."},
+      {es:"Él tiene un perro grande y marrón.", en:"He has a big brown dog."},
+      {es:"¿Tenés tiempo ahora? No, no tengo tiempo.", en:"Do you have time now? No, I don't have time."},
+    ],
+    dictation:[
+      "I have a sister.",
+      "He has a brown dog.",
+      "Do you have any brothers?",
+    ]
+  },
+  {id:'past_simple', label:'Past simple', active:false,
+    description:'Completed actions in the past',
+    questions:[
+      {q:'What did you do yesterday?', opts:["I went to the park.","I go to the park.","I am going to the park.","I goes to the park."], ans:0},
+      {q:'Did she call you?', opts:["Yes, she called me.","Yes, she call me.","Yes, she calls me.","Yes, she calling me."], ans:0},
+    ],
+    scaffold:[
+      {q:"What did you do last weekend?", structure:"Last weekend I ___. On Saturday I ___. On Sunday I ___."},
+      {q:"Tell me about your last vacation.", structure:"I went to ___. It was ___. I ate ___ and visited ___."},
+    ],
+    fill:[
+      {sentence:"Yesterday I ___ (go) to school. We ___ (have) a test.", answers:["went","had"]},
+      {sentence:"She ___ (cook) dinner and he ___ (watch) TV.", answers:["cooked","watched"]},
+    ],
+    translations:[
+      {es:"Ayer fui al supermercado con mi mamá.", en:"Yesterday I went to the supermarket with my mum."},
+      {es:"El fin de semana pasado salí con mis amigos.", en:"Last weekend I went out with my friends."},
+      {es:"¿Qué hiciste anoche? Estudié inglés.", en:"What did you do last night? I studied English."},
+    ],
+    dictation:[
+      "I went to school yesterday.",
+      "She cooked dinner last night.",
+      "We had a great time.",
+    ]
+  },
+];
+
+// ════════════════════════════════════════════════
+// LESSON PANEL
+// ════════════════════════════════════════════════
+function renderLessons(){
+  const el = document.getElementById('lessons-list');
+  el.innerHTML = LESSONS.map((l,i)=>`
+    <div class="lesson-row">
+      <div>
+        <div class="lesson-label">${l.label} <span class="chip ${l.active?'chip-green':'chip-off'}">${l.active?'active':'off'}</span></div>
+        <div class="lesson-meta">${l.description}</div>
+      </div>
+      <button class="toggle ${l.active?'on':'off'}" onclick="toggleLesson(${i})" title="Toggle"></button>
+    </div>
+  `).join('');
+  updateStatUI();
+}
+function toggleLesson(i){ LESSONS[i].active=!LESSONS[i].active; renderLessons(); }
+function activateAll(){ LESSONS.forEach(l=>l.active=true); renderLessons(); }
+function resetLessons(){ LESSONS.forEach((l,i)=>l.active=i<6); renderLessons(); }
+function getActivePool(key){
+  let pool=[]; LESSONS.filter(l=>l.active).forEach(l=>{ if(l[key]) pool=pool.concat(l[key]); }); return pool;
+}
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]; } return a; }
+
+// ════════════════════════════════════════════════
+// HOT SEAT
+// ════════════════════════════════════════════════
+function startHotSeat(){
+  hsPool = shuffle(getActivePool('questions')).slice(0,10);
+  if(!hsPool.length){ alert('Activate at least one lesson first.'); return; }
+  hsIndex=0; hsCorrect=0; hsResults=[];
+  document.getElementById('hs-ready-card').classList.add('hidden');
+  document.getElementById('hs-end-card').classList.add('hidden');
+  document.getElementById('hs-result-card').classList.add('hidden');
+  document.getElementById('hs-game-card').classList.remove('hidden');
+  renderHsProgress();
+  showHsQuestion();
+}
+function renderHsProgress(){
+  const dots = hsPool.map((_,i)=>{
+    let cls='hs-dot';
+    if(i<hsResults.length) cls+= hsResults[i]?' done':' wrong';
+    else if(i===hsIndex) cls+=' current';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+  document.getElementById('hs-progress').innerHTML=dots;
+}
+function showHsQuestion(){
+  if(hsIndex>=hsPool.length){ endHotSeatGame(); return; }
+  const q = hsPool[hsIndex];
+  document.getElementById('hs-game-card').classList.remove('hidden');
+  document.getElementById('hs-result-card').classList.add('hidden');
+  document.getElementById('hs-question').textContent = q.q;
+  speakEN(q.q);
+  document.getElementById('hs-opts').innerHTML = q.opts.map((o,i)=>`
+    <button class="opt-btn" onclick="pickHsOpt(${i},${q.ans},'${o.replace(/'/g,"\\'")}')">${o}</button>
+  `).join('');
+  hsTime=6;
+  document.getElementById('hs-timer').textContent=hsTime;
+  document.getElementById('hs-timer').classList.remove('urgent');
+  clearInterval(hsInterval);
+  hsInterval=setInterval(()=>{
+    hsTime--;
+    document.getElementById('hs-timer').textContent=hsTime;
+    if(hsTime<=2) document.getElementById('hs-timer').classList.add('urgent');
+    if(hsTime<=0){ clearInterval(hsInterval); pickHsOpt(-1, hsPool[hsIndex].ans, hsPool[hsIndex].opts[hsPool[hsIndex].ans]); }
+  },1000);
+}
+function pickHsOpt(i,correct,text){
+  clearInterval(hsInterval);
+  document.querySelectorAll('.opt-btn').forEach((b,j)=>{
+    b.style.pointerEvents='none';
+    if(j===correct) b.classList.add('correct');
+    else if(j===i&&i!==correct) b.classList.add('wrong');
+  });
+  const ok = i===correct;
+  if(ok) { bumpStat(); hsCorrect++; }
+  hsResults.push(ok);
+  renderHsProgress();
+  setTimeout(()=>showHsResult(ok, text),700);
+}
+function showHsResult(ok, text){
+  document.getElementById('hs-game-card').classList.add('hidden');
+  document.getElementById('hs-result-card').classList.remove('hidden');
+  document.getElementById('hs-result-text').innerHTML = ok
+    ? `<span style="color:var(--green);font-size:18px">✓ Correct!</span><br><span style="color:var(--text);font-size:15px">"${text}"</span>`
+    : `<span style="color:var(--red);font-size:18px">⏱ Time's up!</span><br><span style="color:var(--text2);font-size:14px">Answer: </span><span style="color:var(--text);font-size:15px">"${text}"</span>`;
+  speakEN(text);
+  hsIndex++;
+}
+function nextHotSeat(){ showHsQuestion(); }
+function endHotSeatGame(){
+  clearInterval(hsInterval);
+  document.getElementById('hs-game-card').classList.add('hidden');
+  document.getElementById('hs-result-card').classList.add('hidden');
+  document.getElementById('hs-end-card').classList.remove('hidden');
+  document.getElementById('hs-score').textContent = `${hsCorrect}/${hsPool.length}`;
+}
+function endHotSeat(){
+  clearInterval(hsInterval);
+  document.getElementById('hs-ready-card').classList.remove('hidden');
+  document.getElementById('hs-game-card').classList.add('hidden');
+  document.getElementById('hs-result-card').classList.add('hidden');
+  document.getElementById('hs-end-card').classList.add('hidden');
+}
+
+// ════════════════════════════════════════════════
+// DIALOGS
+// ════════════════════════════════════════════════
+const DIALOGS = [
+  {topic:'Greetings', lesson:'greetings', lines:[
+    {who:'A',en:"Hi! How are you today?",es:"¡Hola! ¿Cómo estás hoy?"},
+    {who:'B',en:"I'm great, thanks! And you?",es:"¡Muy bien, gracias! ¿Y vos?"},
+    {who:'A',en:"I'm good too. Nice to see you!",es:"Yo también estoy bien. ¡Qué bueno verte!"},
+    {who:'B',en:"See you later!",es:"¡Hasta luego!"},
+  ]},
+  {topic:'At the café', lesson:'present_simple', lines:[
+    {who:'A',en:"Good morning! What would you like?",es:"¡Buenos días! ¿Qué desea?"},
+    {who:'B',en:"A coffee with milk, please.",es:"Un café con leche, por favor."},
+    {who:'A',en:"Anything else?",es:"¿Algo más?"},
+    {who:'B',en:"A piece of cake too, please. How much is it?",es:"Una torta también, por favor. ¿Cuánto es?"},
+    {who:'A',en:"It's five dollars in total.",es:"Son cinco dólares en total."},
+  ]},
+  {topic:'Asking for directions', lesson:'there_this', lines:[
+    {who:'A',en:"Excuse me. Is there a pharmacy near here?",es:"Disculpe. ¿Hay una farmacia cerca?"},
+    {who:'B',en:"Yes. Go straight two blocks and turn right.",es:"Sí. Vaya recto dos cuadras y doble a la derecha."},
+    {who:'A',en:"Is it far?",es:"¿Está lejos?"},
+    {who:'B',en:"No, it's about five minutes on foot.",es:"No, son unos cinco minutos a pie."},
+    {who:'A',en:"Thank you very much!",es:"¡Muchas gracias!"},
+  ]},
+  {topic:'Introducing yourself', lesson:'greetings', lines:[
+    {who:'A',en:"Hi, I'm María. What's your name?",es:"Hola, soy María. ¿Cómo te llamás?"},
+    {who:'B',en:"Nice to meet you, María. My name is Diego.",es:"Mucho gusto, María. Me llamo Diego."},
+    {who:'A',en:"Where are you from, Diego?",es:"¿De dónde sos, Diego?"},
+    {who:'B',en:"I'm from Asunción. And you?",es:"Soy de Asunción. ¿Y vos?"},
+    {who:'A',en:"Me too! What do you do?",es:"¡Yo también! ¿A qué te dedicás?"},
+    {who:'B',en:"I'm a student. I study English.",es:"Soy estudiante. Estudio inglés."},
+  ]},
+  {topic:'At the doctor', lesson:'verb_to_be', lines:[
+    {who:'A',en:"Good morning. I have an appointment.",es:"Buenos días. Tengo una cita."},
+    {who:'B',en:"What is your name, please?",es:"¿Su nombre, por favor?"},
+    {who:'A',en:"My name is Laura Pérez.",es:"Me llamo Laura Pérez."},
+    {who:'B',en:"Are you feeling better today?",es:"¿Se siente mejor hoy?"},
+    {who:'A',en:"A little better, thank you.",es:"Un poco mejor, gracias."},
+  ]},
+  {topic:'Shopping for clothes', lesson:'have', lines:[
+    {who:'A',en:"Excuse me. Do you have this in a larger size?",es:"Disculpe. ¿Tiene esto en un talle más grande?"},
+    {who:'B',en:"Yes, we have it in medium and large.",es:"Sí, tenemos en mediano y grande."},
+    {who:'A',en:"Can I try the large one?",es:"¿Puedo probarme el grande?"},
+    {who:'B',en:"Of course. The fitting room is over there.",es:"Por supuesto. El probador está allá."},
+    {who:'A',en:"Thank you! How much is it?",es:"¡Gracias! ¿Cuánto cuesta?"},
+    {who:'B',en:"It's forty-five dollars.",es:"Son cuarenta y cinco dólares."},
+  ]},
+  {topic:'Talking about your day', lesson:'present_simple', lines:[
+    {who:'A',en:"What do you usually do in the morning?",es:"¿Qué hacés normalmente por la mañana?"},
+    {who:'B',en:"I wake up at seven, have breakfast, and go to work.",es:"Me despierto a las siete, desayuno y voy al trabajo."},
+    {who:'A',en:"Do you go by bus or on foot?",es:"¿Vas en colectivo o a pie?"},
+    {who:'B',en:"I take the bus. It takes about twenty minutes.",es:"Tomo el colectivo. Tarda unos veinte minutos."},
+    {who:'A',en:"And what do you do after work?",es:"¿Y qué hacés después del trabajo?"},
+    {who:'B',en:"I usually rest at home and watch TV.",es:"Generalmente descanso en casa y veo tele."},
+  ]},
+  {topic:'Making plans', lesson:'present_continuous', lines:[
+    {who:'A',en:"Are you doing anything this Saturday?",es:"¿Estás haciendo algo este sábado?"},
+    {who:'B',en:"Not really. Why?",es:"No mucho. ¿Por qué?"},
+    {who:'A',en:"We are going to the park. Do you want to come?",es:"Vamos al parque. ¿Querés venir?"},
+    {who:'B',en:"Sure! What time are you leaving?",es:"¡Claro! ¿A qué hora salen?"},
+    {who:'A',en:"At ten in the morning.",es:"A las diez de la mañana."},
+    {who:'B',en:"Perfect. I am free all day.",es:"Perfecto. Estoy libre todo el día."},
+  ]},
+  {topic:'Talking about abilities', lesson:'can', lines:[
+    {who:'A',en:"Can you cook?",es:"¿Sabés cocinar?"},
+    {who:'B',en:"Yes, I can cook a few things. I can make pasta and rice.",es:"Sí, sé cocinar algunas cosas. Puedo hacer pasta y arroz."},
+    {who:'A',en:"Can you drive?",es:"¿Sabés manejar?"},
+    {who:'B',en:"No, I can't drive yet. But I want to learn.",es:"No, todavía no sé manejar. Pero quiero aprender."},
+    {who:'A',en:"Can you play any instrument?",es:"¿Sabés tocar algún instrumento?"},
+    {who:'B',en:"Yes! I can play the guitar a little.",es:"¡Sí! Sé tocar la guitarra un poco."},
+  ]},
+  {topic:'Talking about the past', lesson:'past_simple', lines:[
+    {who:'A',en:"What did you do last weekend?",es:"¿Qué hiciste el fin de semana pasado?"},
+    {who:'B',en:"I went to my grandmother's house. We had lunch together.",es:"Fui a la casa de mi abuela. Almorzamos juntos."},
+    {who:'A',en:"Did you enjoy it?",es:"¿Lo disfrutaste?"},
+    {who:'B',en:"Yes, it was great. We talked a lot and watched TV.",es:"Sí, estuvo genial. Hablamos mucho y vimos tele."},
+  ]},
+  {topic:'Numbers in real life', lesson:'numbers', lines:[
+    {who:'A',en:"How much does this bag cost?",es:"¿Cuánto cuesta esta cartera?"},
+    {who:'B',en:"It's thirty-five dollars.",es:"Son treinta y cinco dólares."},
+    {who:'A',en:"And that one?",es:"¿Y aquella?"},
+    {who:'B',en:"That one is fifty dollars. But this one is better quality.",es:"Esa es cincuenta dólares. Pero esta es de mejor calidad."},
+    {who:'A',en:"OK, I'll take the thirty-five dollar one.",es:"Bueno, me llevo la de treinta y cinco."},
+  ]},
+  {topic:'Describing a place', lesson:'there_this', lines:[
+    {who:'A',en:"Tell me about your neighborhood.",es:"Contame sobre tu barrio."},
+    {who:'B',en:"It's a nice area. There are many trees and small shops.",es:"Es un barrio lindo. Hay muchos árboles y pequeños comercios."},
+    {who:'A',en:"Is there a park near your house?",es:"¿Hay un parque cerca de tu casa?"},
+    {who:'B',en:"Yes, there is a small one two blocks away.",es:"Sí, hay uno pequeño a dos cuadras."},
+    {who:'A',en:"That sounds great!",es:"¡Suena muy bien!"},
+  ]},
+  {topic:'Meeting a new colleague', lesson:'verb_to_be', lines:[
+    {who:'A',en:"Hi! Are you the new student?",es:"¡Hola! ¿Vos sos el nuevo estudiante?"},
+    {who:'B',en:"Yes, I am! My name is Rodrigo.",es:"¡Sí, soy yo! Me llamo Rodrigo."},
+    {who:'A',en:"Nice to meet you, Rodrigo. I'm Sofia.",es:"Mucho gusto, Rodrigo. Soy Sofía."},
+    {who:'B',en:"Are you from Asunción?",es:"¿Sos de Asunción?"},
+    {who:'A',en:"Yes, I am. And you?",es:"Sí. ¿Y vos?"},
+    {who:'B',en:"I'm from Encarnación, but I live here now.",es:"Soy de Encarnación, pero ahora vivo acá."},
+  ]},
+  {topic:'At the supermarket', lesson:'numbers', lines:[
+    {who:'A',en:"Excuse me, where is the bread?",es:"Disculpe, ¿dónde está el pan?"},
+    {who:'B',en:"It's in aisle three, on the left.",es:"Está en el pasillo tres, a la izquierda."},
+    {who:'A',en:"Thank you. And how much is this orange juice?",es:"Gracias. ¿Y cuánto cuesta este jugo de naranja?"},
+    {who:'B',en:"It's two dollars fifty.",es:"Son dos dólares con cincuenta."},
+  ]},
+  {topic:'Morning routines', lesson:'present_simple', lines:[
+    {who:'A',en:"What time do you wake up?",es:"¿A qué hora te levantás?"},
+    {who:'B',en:"I wake up at six thirty. And you?",es:"Me levanto a las seis y media. ¿Y vos?"},
+    {who:'A',en:"I wake up at seven. I have breakfast and then I go to work.",es:"Yo a las siete. Desayuno y después voy al trabajo."},
+    {who:'B',en:"Do you take the bus?",es:"¿Tomás el colectivo?"},
+    {who:'A',en:"Yes, every day. It takes thirty minutes.",es:"Sí, todos los días. Tarda treinta minutos."},
+  ]},
+];
+
+let dialogPool = [...DIALOGS];
+
+function filterDialogs(){
+  const topic = document.getElementById('dialog-filter').value;
+  const lesson = document.getElementById('dialog-lesson-filter').value;
+  dialogPool = DIALOGS.filter(d=>{
+    const topicOk = topic==='all'||d.topic===topic;
+    const lessonOk = lesson==='all'||d.lesson===lesson;
+    return topicOk&&lessonOk;
+  });
+  if(dialogPool.length===0) dialogPool=[...DIALOGS];
+  loadDialog();
+}
+
+function loadDialog(){
+  currentDialog = dialogPool[Math.floor(Math.random()*dialogPool.length)];
+  document.getElementById('dialog-chips').innerHTML =
+    `<span class="chip chip-blue">${currentDialog.topic}</span> <span class="chip chip-yellow">${currentDialog.lesson}</span>`;
+  renderDialogLines();
+}
+
+function renderDialogLines(){
+  document.getElementById('dialog-lines').innerHTML = currentDialog.lines.map(l=>`
+    <div class="dialog-line">
+      <span class="dialog-who who-${l.who.toLowerCase()}">${l.who}</span>
+      <div style="flex:1">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+          <span class="line-en">${l.en}</span>
+          <button class="btn btn-sm" onclick="speakEN('${l.en.replace(/'/g,"\\'")}')">🔊</button>
+        </div>
+        <div class="line-es ${translationsVisible?'':'line-hidden'}" onclick="this.classList.toggle('line-hidden')">${l.es}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function toggleTranslations(){
+  translationsVisible = !translationsVisible;
+  renderDialogLines();
+}
+
+function playFullDialog(){
+  if(!currentDialog) return;
+  speechSynthesis.cancel();
+  let delay=0;
+  currentDialog.lines.forEach(l=>{
+    setTimeout(()=>speakEN(l.en), delay);
+    delay += Math.max(1800, l.en.split(' ').length*600/speechRate);
+  });
+}
+function playDialogSlow(){ const old=speechRate; speechRate=0.5; playFullDialog(); speechRate=old; }
+
+function populateDialogFilters(){
+  const topicSel = document.getElementById('dialog-filter');
+  const lessonSel = document.getElementById('dialog-lesson-filter');
+  const topics = [...new Set(DIALOGS.map(d=>d.topic))];
+  const lessons = [...new Set(DIALOGS.map(d=>d.lesson))];
+  topicSel.innerHTML='<option value="all">All topics</option>'+topics.map(t=>`<option value="${t}">${t}</option>`).join('');
+  lessonSel.innerHTML='<option value="all">All lessons</option>'+lessons.map(l=>`<option value="${l}">${l}</option>`).join('');
+}
+
+// ════════════════════════════════════════════════
+// GUIDED SPEAKING (SCAFFOLD)
+// ════════════════════════════════════════════════
+const SCAFFOLD_EXTRA = [
+  {q:"Describe yourself in three sentences.", structure:"My name is ___. I am ___ years old. I am a ___."},
+  {q:"What is your favorite food?", structure:"My favorite food is ___. I like it because it is ___."},
+  {q:"Tell me about your house.", structure:"My house is ___. There are ___ rooms. I like my house because ___."},
+  {q:"What do you do on Sundays?", structure:"On Sundays I usually ___. Sometimes I ___ with my family."},
+  {q:"Describe your best friend.", structure:"My best friend's name is ___. He/She is ___. We always ___ together."},
+  {q:"What are you studying?", structure:"I am studying ___. I study ___ times a week. I want to learn ___."},
+  {q:"Describe your neighborhood.", structure:"My neighborhood is ___. There is a ___ near my house. I like it because ___."},
+  {q:"What do you do after class?", structure:"After class I usually ___. Sometimes I ___."},
+];
+
+function loadScaffold(){
+  const pool = shuffle([...getActivePool('scaffold'), ...SCAFFOLD_EXTRA]);
+  currentScaffold = pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('sc-question').textContent = currentScaffold.q;
+  document.getElementById('sc-scaffold').innerHTML = `<span style="color:var(--text3)">Structure: </span><strong>${currentScaffold.structure}</strong>`;
+  document.getElementById('sc-answer').value='';
+  document.getElementById('sc-sample').classList.add('hidden');
+  document.getElementById('sc-feedback').classList.add('hidden');
+  speakEN(currentScaffold.q);
+}
+function showScSample(){
+  const sample = document.getElementById('sc-sample');
+  sample.textContent = currentScaffold.structure.replace(/_+/g,'[your words]');
+  sample.classList.remove('hidden');
+}
+async function checkScaffoldAI(){
+  const answer = document.getElementById('sc-answer').value.trim();
+  if(!answer){ alert('Write your answer first!'); return; }
+  const fb = document.getElementById('sc-feedback');
+  fb.className='feedback-box feedback-info';
+  fb.textContent='Checking your answer...';
+  fb.classList.remove('hidden');
+  try{
+    const res = await callClaude(`You are a gentle English teacher for Spanish-speaking beginners. 
+The student was asked: "${currentScaffold.q}"
+The structure hint was: "${currentScaffold.structure}"
+The student wrote: "${answer}"
+Check their answer briefly. If it's good, congratulate them. If there are errors, show the corrected version and explain ONE main error simply. Be encouraging. Use at most 3 sentences. Respond in English with a Spanish explanation in parentheses if needed.`);
+    fb.className='feedback-box feedback-info';
+    fb.textContent=res;
+    bumpStat();
+  }catch(e){
+    fb.className='feedback-box feedback-bad';
+    fb.textContent='Connection error. Try again.';
+  }
+}
+
+// ════════════════════════════════════════════════
+// FILL IN THE BLANK
+// ════════════════════════════════════════════════
+function loadFill(){
+  const pool = getActivePool('fill');
+  if(!pool.length){
+    document.getElementById('fill-sentences').innerHTML='<div style="color:var(--text2)">Activate lessons to get exercises.</div>';
+    return;
+  }
+  currentFill = shuffle([...pool]).slice(0,4);
+  document.getElementById('fill-result').classList.add('hidden');
+  document.getElementById('fill-sentences').innerHTML = currentFill.map((f,i)=>`
+    <div class="fill-sentence">
+      ${f.sentence.split('___').map((part,j)=>
+        j<f.answers.length
+          ? `${part}<input type="text" class="fill-input" id="fill-${i}-${j}" placeholder="?" onkeydown="if(event.key==='Enter')checkFill()">`
+          : part
+      ).join('')}
+    </div>
+  `).join('');
+}
+function checkFill(){
+  let correct=0, total=0;
+  currentFill.forEach((f,i)=>{
+    f.answers.forEach((ans,j)=>{
+      const input = document.getElementById(`fill-${i}-${j}`);
+      if(!input) return;
+      total++;
+      const val = input.value.trim().toLowerCase();
+      const ok = val===ans.toLowerCase();
+      input.classList.toggle('correct', ok);
+      input.classList.toggle('wrong', !ok);
+      if(!ok) input.placeholder=ans;
+      if(ok) correct++;
+    });
+  });
+  const res = document.getElementById('fill-result');
+  res.className=`feedback-box ${correct===total?'feedback-good':'feedback-bad'}`;
+  res.innerHTML = `${correct===total?'✓ Perfect! All correct!':'⚠ '+correct+' / '+total+' correct — check the highlighted ones.'}`;
+  res.classList.remove('hidden');
+  if(correct>0) bumpStat();
+}
+function readFillSentences(){
+  if(!currentFill) return;
+  let delay=0;
+  currentFill.forEach(f=>{
+    const clean = f.sentence.replace(/___+/g, '...');
+    setTimeout(()=>speakEN(clean), delay);
+    delay+=2500;
+  });
+}
+
+// ════════════════════════════════════════════════
+// AI CHAT
+// ════════════════════════════════════════════════
+const ROLE_PROMPTS = {
+  friend:"You are a friendly English conversation partner for a Spanish-speaking beginner. Keep messages SHORT (1-3 sentences max). Use only simple vocabulary and grammar from these lessons: {lessons}. Ask one simple follow-up question. Be encouraging and warm. Never use grammar structures beyond what's listed. If the student makes an error, respond naturally and include the correct form in your reply without making it awkward.",
+  shop:"You are a shopkeeper in a small store in Paraguay. The student is your customer. Keep messages SHORT and natural. Use only vocabulary and structures from: {lessons}. Ask one simple question each turn. Be friendly.",
+  doctor:"You are a receptionist at a doctor's office. Keep messages SHORT and simple. Use only structures from: {lessons}. Be polite and helpful. Ask simple questions about the patient.",
+  teacher:"You are a gentle English teacher talking with a beginner. Keep responses SHORT (2 sentences max). Only use grammar from: {lessons}. Encourage the student. If they make an error, gently show the correct form in your next message.",
+  cafe:"You are a waiter at a café. Keep messages SHORT. Use only simple vocabulary from: {lessons}. Take orders, answer simple questions about the menu. Be warm and friendly.",
+  job:"You are a kind interviewer for a simple job. Ask one question at a time. Keep things simple. Use only structures from: {lessons}. Be encouraging even if the student's English is basic.",
+};
+
+function getActiveLessonNames(){ return LESSONS.filter(l=>l.active).map(l=>l.label).join(', '); }
+function initChat(){
+  if(chatHistory.length===0) startChat();
+  document.getElementById('chat-lessons-note').textContent = '📗 Active: '+getActiveLessonNames();
+}
+function startChat(){
+  chatHistory=[]; lastAIMessage='';
+  chatRole = document.getElementById('chat-role').value;
+  const area = document.getElementById('chat-area');
+  area.innerHTML='';
+  const starters = {
+    friend:"Hi! How are you doing today? 😊",
+    shop:"Hello! Welcome to the shop. Can I help you find something?",
+    doctor:"Good morning! Do you have an appointment today?",
+    teacher:"Hello! Let's practice English together. How are you feeling today?",
+    cafe:"Good morning! Welcome. What can I get for you?",
+    job:"Good morning! Please sit down. Can you tell me a little about yourself?",
+  };
+  const msg = starters[chatRole];
+  chatHistory.push({role:'assistant',content:msg});
+  lastAIMessage=msg;
+  appendChatBubble(msg,'ai');
+  speakEN(msg);
+  document.getElementById('chat-input').value='';
+  document.getElementById('chat-lessons-note').textContent = '📗 Active: '+getActiveLessonNames();
+}
+function appendChatBubble(text, who){
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = `chat-bubble bubble-${who} fade-in`;
+  div.textContent = text;
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+function appendChatNote(text){
+  const area = document.getElementById('chat-area');
+  const div = document.createElement('div');
+  div.className = 'bubble-note';
+  div.textContent = text;
+  div.id='chat-loading';
+  area.appendChild(div);
+  area.scrollTop = area.scrollHeight;
+}
+async function sendChat(){
+  const input = document.getElementById('chat-input');
+  const text = input.value.trim();
+  if(!text) return;
+  input.value='';
+  chatHistory.push({role:'user',content:text});
+  appendChatBubble(text,'user');
+  bumpStat();
+  appendChatNote('...');
+  const systemPrompt = ROLE_PROMPTS[chatRole].replace('{lessons}', getActiveLessonNames());
+  try{
+    const reply = await callClaude('', chatHistory, systemPrompt);
+    document.getElementById('chat-loading')?.remove();
+    chatHistory.push({role:'assistant',content:reply});
+    lastAIMessage=reply;
+    appendChatBubble(reply,'ai');
+    speakEN(reply);
+  }catch(e){
+    document.getElementById('chat-loading')?.remove();
+    appendChatNote('Connection error. Try again.');
+  }
+}
+function speakLastAI(){ if(lastAIMessage) speakEN(lastAIMessage); }
+
+// ════════════════════════════════════════════════
+// TRANSLATE & CHECK
+// ════════════════════════════════════════════════
+function getAllTranslations(){
+  let pool=[];
+  LESSONS.filter(l=>l.active).forEach(l=>{ if(l.translations) pool=pool.concat(l.translations); });
+  return pool;
+}
+function loadTranslation(){
+  const pool = getAllTranslations();
+  if(!pool.length){
+    document.getElementById('tr-es-text').textContent='Activate lessons first.';
+    return;
+  }
+  currentTranslation = pool[Math.floor(Math.random()*pool.length)];
+  document.getElementById('tr-es-text').textContent = currentTranslation.es;
+  document.getElementById('tr-en-input').value='';
+  document.getElementById('tr-feedback').classList.add('hidden');
+  document.getElementById('tr-correct').classList.add('hidden');
+}
+async function checkTranslation(){
+  const userTrans = document.getElementById('tr-en-input').value.trim();
+  if(!userTrans){ alert('Write your translation first!'); return; }
+  const fb = document.getElementById('tr-feedback');
+  fb.className='feedback-box feedback-info';
+  fb.textContent='Checking...';
+  fb.classList.remove('hidden');
+  const correct = document.getElementById('tr-correct');
+  correct.classList.add('hidden');
+  try{
+    const res = await callClaude(`You are checking an English translation by a Spanish-speaking beginner.
+Spanish original: "${currentTranslation.es}"
+Reference translation: "${currentTranslation.en}"
+Student's translation: "${userTrans}"
+Is the student's translation correct or acceptable? Give brief feedback (1-2 sentences max). Be encouraging. If there's an error, show the correct version. If it's good or close enough, celebrate. Keep it simple.`);
+    fb.className='feedback-box feedback-info';
+    fb.textContent=res;
+    correct.textContent='Reference: '+currentTranslation.en;
+    correct.classList.remove('hidden');
+    bumpStat();
+  }catch(e){
+    fb.className='feedback-box feedback-bad';
+    fb.textContent='Connection error. Try again.';
+  }
+}
+function speakTranslation(){
+  if(currentTranslation) speakEN(currentTranslation.en);
+}
+
+// ════════════════════════════════════════════════
+// DICTATION
+// ════════════════════════════════════════════════
+function getAllDictation(){
+  let pool=[];
+  LESSONS.filter(l=>l.active).forEach(l=>{ if(l.dictation) pool=pool.concat(l.dictation); });
+  return pool;
+}
+function loadDictation(){
+  const pool = getAllDictation();
+  currentDictation = pool[Math.floor(Math.random()*pool.length)] || "I am studying English today.";
+  document.getElementById('dict-hidden-phrase').classList.remove('hidden');
+  document.getElementById('dict-reveal-phrase').classList.add('hidden');
+  document.getElementById('dict-reveal-phrase').textContent = currentDictation;
+  document.getElementById('dict-input').value='';
+  document.getElementById('dict-feedback').classList.add('hidden');
+  dictationRevealed=false;
+}
+function playDictation(){ if(currentDictation) speakEN(currentDictation); }
+function playDictationSlow(){ if(currentDictation) speakEN(currentDictation, 0.5); }
+function toggleDictationReveal(){
+  dictationRevealed=!dictationRevealed;
+  document.getElementById('dict-hidden-phrase').classList.toggle('hidden', dictationRevealed);
+  document.getElementById('dict-reveal-phrase').classList.toggle('hidden', !dictationRevealed);
+}
+function checkDictation(){
+  const typed = document.getElementById('dict-input').value.trim().toLowerCase();
+  const correct = currentDictation.toLowerCase();
+  const fb = document.getElementById('dict-feedback');
+  fb.classList.remove('hidden');
+  if(typed===correct){
+    fb.className='feedback-box feedback-good';
+    fb.textContent='✓ Perfect! Exactly right.';
+    bumpStat();
+  } else {
+    // Compare word by word
+    const typedWords = typed.replace(/[.,!?]/g,'').split(' ');
+    const correctWords = correct.replace(/[.,!?]/g,'').split(' ');
+    const score = typedWords.filter((w,i)=>w===correctWords[i]).length;
+    const pct = Math.round(score/correctWords.length*100);
+    fb.className='feedback-box feedback-bad';
+    fb.innerHTML=`${pct}% correct.<br>You wrote: <em>${typed||'(nothing)'}</em><br>Correct: <strong>${currentDictation}</strong>`;
+    // Reveal
+    document.getElementById('dict-hidden-phrase').classList.add('hidden');
+    document.getElementById('dict-reveal-phrase').classList.remove('hidden');
+  }
+}
+
+// ════════════════════════════════════════════════
+// VOCABULARY
+// ════════════════════════════════════════════════
+const VOCAB_SETS = [
+  {topic:'Daily routines', words:[
+    {en:'wake up',es:'despertarse',ex:'I wake up at 7 am.'},
+    {en:'have breakfast',es:'desayunar',ex:'We have breakfast together.'},
+    {en:'get dressed',es:'vestirse',ex:'She gets dressed quickly.'},
+    {en:'go to work',es:'ir al trabajo',ex:'He goes to work by bus.'},
+    {en:'go to bed',es:'irse a dormir',ex:'I go to bed at 10 pm.'},
+  ]},
+  {topic:'Feelings',words:[
+    {en:'happy',es:'feliz / contento',ex:'I feel happy today.'},
+    {en:'tired',es:'cansado/a',ex:'She is very tired.'},
+    {en:'nervous',es:'nervioso/a',ex:'He is nervous before the exam.'},
+    {en:'excited',es:'emocionado/a',ex:'We are excited about the trip.'},
+    {en:'worried',es:'preocupado/a',ex:"I'm worried about my friend."},
+  ]},
+  {topic:'Places in town',words:[
+    {en:'bank',es:'banco',ex:'The bank is on the corner.'},
+    {en:'pharmacy',es:'farmacia',ex:'I need to go to the pharmacy.'},
+    {en:'supermarket',es:'supermercado',ex:'She goes to the supermarket on Fridays.'},
+    {en:'hospital',es:'hospital',ex:'The hospital is very big.'},
+    {en:'bus stop',es:'parada de colectivo',ex:'Wait at the bus stop.'},
+  ]},
+  {topic:'Food & drinks',words:[
+    {en:'bread',es:'pan',ex:'I eat bread for breakfast.'},
+    {en:'chicken',es:'pollo',ex:'We had chicken for lunch.'},
+    {en:'vegetables',es:'verduras',ex:'Vegetables are healthy.'},
+    {en:'juice',es:'jugo',ex:'She drinks orange juice.'},
+    {en:'dessert',es:'postre',ex:'My favorite dessert is cake.'},
+  ]},
+  {topic:'Family',words:[
+    {en:'parents',es:'padres',ex:'My parents live nearby.'},
+    {en:'sibling',es:'hermano/a',ex:'I have one sibling.'},
+    {en:'grandparents',es:'abuelos',ex:'My grandparents are very kind.'},
+    {en:'cousin',es:'primo/a',ex:'My cousin is 15 years old.'},
+    {en:'nephew / niece',es:'sobrino / sobrina',ex:'My nephew is very funny.'},
+  ]},
+  {topic:'Common verbs',words:[
+    {en:'need',es:'necesitar',ex:"I need some help."},
+    {en:'want',es:'querer',ex:'She wants a new phone.'},
+    {en:'understand',es:'entender',ex:"I don't understand this word."},
+    {en:'think',es:'pensar / creer',ex:"I think it's a good idea."},
+    {en:'know',es:'saber / conocer',ex:'Do you know him?'},
+  ]},
+  {topic:'Clothes',words:[
+    {en:'shirt',es:'camisa / remera',ex:'He wears a white shirt.'},
+    {en:'trousers',es:'pantalón',ex:'My trousers are blue.'},
+    {en:'dress',es:'vestido',ex:'She has a beautiful dress.'},
+    {en:'shoes',es:'zapatos',ex:'I need new shoes.'},
+    {en:'jacket',es:'campera / saco',ex:'Take your jacket. It is cold.'},
+  ]},
+  {topic:'Adjectives',words:[
+    {en:'big / small',es:'grande / pequeño',ex:'My house is big but the garden is small.'},
+    {en:'fast / slow',es:'rápido / lento',ex:'The bus is slow today.'},
+    {en:'cheap / expensive',es:'barato / caro',ex:'This dress is cheap. That one is expensive.'},
+    {en:'easy / difficult',es:'fácil / difícil',ex:'English is easy when you practice!'},
+    {en:'clean / dirty',es:'limpio / sucio',ex:'The room is very clean.'},
+  ]},
+];
+
+let vocabShown = [];
+function loadVocab(){
+  currentVocab = VOCAB_SETS[Math.floor(Math.random()*VOCAB_SETS.length)];
+  vocabShown = currentVocab.words.map(w=>({...w,showEs:false}));
+  renderVocab();
+}
+function shuffleVocab(){ vocabShown=shuffle([...vocabShown]); renderVocab(); }
+function renderVocab(){
+  document.getElementById('vocab-topic-label').textContent = currentVocab.topic;
+  document.getElementById('vocab-rows').innerHTML=vocabShown.map((w,i)=>`
+    <div class="vocab-card">
+      <div style="flex:1">
+        <div class="vocab-en">${w.en}</div>
+        <div class="vocab-example">${w.ex}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <div class="vocab-es">${w.showEs?`<span style="color:var(--text2)">${w.es}</span>`:'<span style="color:var(--border2)">···</span>'}</div>
+        <button class="btn btn-sm" onclick="toggleVocabEs(${i})">${w.showEs?'Hide':'Show'}</button>
+        <button class="btn btn-sm btn-blue" onclick="speakEN('${w.en.replace(/'/g,"\\'")}')">🔊</button>
+      </div>
+    </div>
+  `).join('');
+}
+function toggleVocabEs(i){ vocabShown[i].showEs=!vocabShown[i].showEs; renderVocab(); }
+function playAllVocab(){
+  if(!currentVocab) return;
+  speechSynthesis.cancel();
+  let delay=0;
+  currentVocab.words.forEach(w=>{ setTimeout(()=>speakEN(w.en),delay); delay+=2200; });
+}
+
+// ════════════════════════════════════════════════
+// API HELPER — llama al proxy Netlify (la key queda server-side)
+// ════════════════════════════════════════════════
+async function callClaude(prompt, messages, systemPrompt){
+  const msgs = [];
+  if(messages && messages.length > 0){
+    if(systemPrompt) msgs.push({role:'system', content: systemPrompt});
+    messages.forEach(m => msgs.push({role: m.role, content: m.content}));
+  } else {
+    if(systemPrompt) msgs.push({role:'system', content: systemPrompt});
+    msgs.push({role:'user', content: prompt});
+  }
+  const res = await fetch('/.netlify/functions/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages: msgs })
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err.error || 'Server error ' + res.status);
+  }
+  const data = await res.json();
+  return data.content || '';
+}
+
+// ════════════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════════════
+renderLessons();
+populateDialogFilters();
+updateStatUI();
+</script>
+</body>
+</html>
