@@ -1534,7 +1534,7 @@ async function checkScaffoldAI(){
   fb.textContent='Checking your answer...';
   fb.classList.remove('hidden');
   try{
-    const res = await callClaude(`You are a gentle English teacher for Spanish-speaking beginners. 
+    const res = await callClaude(You are a gentle English teacher for Spanish-speaking beginners. Reply directly with your response only. Do not show reasoning or thinking. 
 The student was asked: "${currentScaffold.q}"
 The structure hint was: "${currentScaffold.structure}"
 The student wrote: "${answer}"
@@ -1604,12 +1604,12 @@ function readFillSentences(){
 // AI CHAT
 // ════════════════════════════════════════════════
 const ROLE_PROMPTS = {
-  friend:"You are a friendly English conversation partner for a Spanish-speaking beginner. Keep messages SHORT (1-3 sentences max). Use only simple vocabulary and grammar from these lessons: {lessons}. Ask one simple follow-up question. Be encouraging and warm. Never use grammar structures beyond what's listed. If the student makes an error, respond naturally and include the correct form in your reply without making it awkward.",
-  shop:"You are a shopkeeper in a small store in Paraguay. The student is your customer. Keep messages SHORT and natural. Use only vocabulary and structures from: {lessons}. Ask one simple question each turn. Be friendly.",
-  doctor:"You are a receptionist at a doctor's office. Keep messages SHORT and simple. Use only structures from: {lessons}. Be polite and helpful. Ask simple questions about the patient.",
-  teacher:"You are a gentle English teacher talking with a beginner. Keep responses SHORT (2 sentences max). Only use grammar from: {lessons}. Encourage the student. If they make an error, gently show the correct form in your next message.",
-  cafe:"You are a waiter at a café. Keep messages SHORT. Use only simple vocabulary from: {lessons}. Take orders, answer simple questions about the menu. Be warm and friendly.",
-  job:"You are a kind interviewer for a simple job. Ask one question at a time. Keep things simple. Use only structures from: {lessons}. Be encouraging even if the student's English is basic.",
+  friend:"Reply directly. No thinking or reasoning visible.You are a friendly English conversation partner for a Spanish-speaking beginner. Keep messages SHORT (1-3 sentences max). Use only simple vocabulary and grammar from these lessons: {lessons}. Ask one simple follow-up question. Be encouraging and warm. Never use grammar structures beyond what's listed. If the student makes an error, respond naturally and include the correct form in your reply without making it awkward.",
+  shop:"Reply directly. No thinking or reasoning visible.You are a shopkeeper in a small store in Paraguay. The student is your customer. Keep messages SHORT and natural. Use only vocabulary and structures from: {lessons}. Ask one simple question each turn. Be friendly.",
+  doctor:"Reply directly. No thinking or reasoning visible.You are a receptionist at a doctor's office. Keep messages SHORT and simple. Use only structures from: {lessons}. Be polite and helpful. Ask simple questions about the patient.",
+  teacher:"Reply directly. No thinking or reasoning visible.You are a gentle English teacher talking with a beginner. Keep responses SHORT (2 sentences max). Only use grammar from: {lessons}. Encourage the student. If they make an error, gently show the correct form in your next message.",
+  cafe:"Reply directly. No thinking or reasoning visible.You are a waiter at a café. Keep messages SHORT. Use only simple vocabulary from: {lessons}. Take orders, answer simple questions about the menu. Be warm and friendly.",
+  job:"Reply directly. No thinking or reasoning visible.You are a kind interviewer for a simple job. Ask one question at a time. Keep things simple. Use only structures from: {lessons}. Be encouraging even if the student's English is basic.",
 };
 
 function getActiveLessonNames(){ return LESSONS.filter(l=>l.active).map(l=>l.label).join(', '); }
