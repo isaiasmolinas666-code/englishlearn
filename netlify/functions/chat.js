@@ -56,7 +56,7 @@ exports.handler = async function(event) {
         'X-Title': 'English Learning System',
       },
       body: JSON.stringify({
-       model: 'nousresearch/hermes-3-llama-3.1-405b:free',
+       model: 'openrouter/free',
         max_tokens: 300,
         messages: messages,
       }),
