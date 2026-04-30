@@ -1534,7 +1534,7 @@ async function checkScaffoldAI(){
   fb.textContent='Checking your answer...';
   fb.classList.remove('hidden');
   try{
-    const res = await callClaude(You are a gentle English teacher for Spanish-speaking beginners. Reply directly with your response only. Do not show reasoning or thinking. 
+    const res = await callClaude(`You are a gentle English teacher for Spanish-speaking beginners. Reply directly with your response only. Do not show reasoning or thinking. 
 The student was asked: "${currentScaffold.q}"
 The structure hint was: "${currentScaffold.structure}"
 The student wrote: "${answer}"
