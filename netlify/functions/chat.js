@@ -56,7 +56,7 @@ exports.handler = async function(event) {
         'X-Title': 'English Learning System',
       },
       body: JSON.stringify({
-       model: 'nvidia/nemotron-nano-3b-instruct:free',
+       model: 'nvidia/nemotron-3-super-120b-a12b:free',
         max_tokens: 300,
         messages: messages,
       }),
