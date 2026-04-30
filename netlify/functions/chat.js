@@ -56,7 +56,7 @@ exports.handler = async function(event) {
         'X-Title': 'English Learning System',
       },
       body: JSON.stringify({
-       model: 'mistralai/mistral-7b-instruct:free',
+       model: 'google/gemma-3-4b-it:free',
         max_tokens: 300,
         messages: messages,
       }),
