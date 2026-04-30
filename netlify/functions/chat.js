@@ -56,7 +56,7 @@ exports.handler = async function(event) {
         'X-Title': 'English Learning System',
       },
       body: JSON.stringify({
-       model: 'google/gemini-2.0-flash-001',
+       model: 'openai/gpt-4o-mini',
         max_tokens: 300,
         messages: messages,
       }),
